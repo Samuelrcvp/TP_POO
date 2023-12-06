@@ -120,15 +120,15 @@ public class App {
         String placa = teclado.nextLine();
 
         System.out.println("Digite a capacidade máxima do tanque:");
-        double capacidadeMaxima = teclado.nextDouble();
+        double capacidadeMaxima = Double.parseDouble(teclado.nextLine());
 
         System.out.println("Digite a capacidade atual do tanque:");
-        double capacidadeAtual = teclado.nextDouble();
+        double capacidadeAtual = Double.parseDouble(teclado.nextLine());
 
         Veiculo novoVeiculo = new Veiculo(placa, capacidadeMaxima, capacidadeAtual);
         frota.adicionarVeiculo(novoVeiculo);
 
-        System.out.println("Veículo adicionado com sucesso!");
+        System.out.println("\nVeículo adicionado com sucesso!");
         pausa();
     }
 
@@ -141,7 +141,7 @@ public class App {
 
         if (veiculo != null) {
             System.out.println("Digite a quantidade de litros a abastecer:");
-            double litrosAbastecidos = teclado.nextDouble();
+            double litrosAbastecidos = Double.parseDouble(teclado.nextLine());
 
             veiculo.abastecer(litrosAbastecidos);
 
@@ -161,7 +161,7 @@ public class App {
 
         if (veiculo != null) {
             System.out.println("Digite a quilometragem da rota:");
-            double quilometragem = teclado.nextDouble();
+            double quilometragem = Double.parseDouble(teclado.nextLine());
 
             System.out.println("Digite a data da rota (formato dd/MM/yyyy):");
             String dataString = teclado.next();
@@ -191,7 +191,7 @@ public class App {
 
         if (veiculo != null) {
             System.out.println("Digite a quilometragem da rota:");
-            double quilometragem = teclado.nextDouble();
+            double quilometragem = Double.parseDouble(teclado.nextLine());
 
             System.out.println("Digite a data da rota (formato dd/MM/yyyy):");
             String dataString = teclado.next();
