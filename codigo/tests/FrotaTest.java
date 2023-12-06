@@ -11,7 +11,6 @@ public class FrotaTest {
 
     @Test
     public void testRelatorioFrota() throws ParseException {
-        // Configuração do cenário
         Frota frota = new Frota();
 
         Veiculo veiculo1 = new Veiculo("ABC123", 50.0, 30.0);
@@ -46,12 +45,12 @@ public class FrotaTest {
         frota.adicionarVeiculo(veiculo3);
         frota.adicionarVeiculo(veiculo4);
 
-        // Teste do método relatorioFrota
-        String expectedRelatorio = "======= Relatório Frota ======= "
-                + "\nFrota possui 4 veículos"
-                + "\n\nQuilometragem total percorrida da frota: 406"
-                + "\nVeículo com maior quilometragem da frota: " + veiculo2.toString()
-                + "\nVeículo com maior quilometragem média da frota: " + veiculo3.toString();
+        String expectedRelatorio = "================ Relatório Frota ================ "
+        + "\n\nFrota possui 4 veículos"
+        + "\n\nQuilometragem total percorrida da frota: 406 Km"
+        + "\n\nVeículo com maior quilometragem da frota: " + veiculo2.toString()
+        + "\n\nVeículo com maior quilometragem média da frota: " + veiculo3.toString()
+        + "\n===============================================";
 
         assertEquals(expectedRelatorio, frota.relatorioFrota());
     }

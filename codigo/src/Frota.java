@@ -15,12 +15,12 @@ public class Frota {
 
     public String relatorioFrota(){
         DecimalFormat formatarDouble = new DecimalFormat("#.##");
-        StringBuilder aux = new StringBuilder("======= Relatório Frota ======= ");
-        aux.append("\nFrota possui "+ tamanhoFrota + " veículos");
-        aux.append("\n\nQuilometragem total percorrida da frota: "+ formatarDouble.format(quilometragemTotal()));
-        aux.append("\nVeículo com maior quilometragem da frota: "+ maiorKmTotal());
-        aux.append("\nVeículo com maior quilometragem média da frota: "+ maiorKmMedia());
-        
+        StringBuilder aux = new StringBuilder("================ Relatório Frota ================ ");
+        aux.append("\n\nFrota possui "+ tamanhoFrota + " veículos");
+        aux.append("\n\nQuilometragem total percorrida da frota: "+ formatarDouble.format(quilometragemTotal())+" Km");
+        aux.append("\n\nVeículo com maior quilometragem da frota: "+ maiorKmTotal());
+        aux.append("\n\nVeículo com maior quilometragem média da frota: "+ maiorKmMedia());
+        aux.append("\n===============================================");
 
         return aux.toString();
     }
@@ -48,6 +48,12 @@ public class Frota {
       return veiculos.stream()
             .max(Comparator.comparing(veiculo -> veiculo.kmTotal() / veiculo.getQuantRotasPercorridas()))
             .orElse(null);
+    }
+
+    public void iniciarNovoMes() {
+        for(Veiculo veiculo:veiculos){
+            veiculo.iniciarNovoMes();
+        }
     }
 
     public void adicionarVeiculo(Veiculo veiculo){
