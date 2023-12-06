@@ -1,4 +1,5 @@
 import java.util.List;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -13,9 +14,13 @@ public class Frota {
     }
 
     public String relatorioFrota(){
-        StringBuilder aux = new StringBuilder("Relatório Frota: ");
-        aux.append("\nTamanho: "+ tamanhoFrota);
-        aux.append("\nVeículos: "+ veiculos.toString());
+        DecimalFormat formatarDouble = new DecimalFormat("#.##");
+        StringBuilder aux = new StringBuilder("======= Relatório Frota ======= ");
+        aux.append("\nFrota possui "+ tamanhoFrota + " veículos");
+        aux.append("\n\nQuilometragem total percorrida da frota: "+ formatarDouble.format(quilometragemTotal()));
+        aux.append("\nVeículo com maior quilometragem da frota: "+ maiorKmTotal());
+        aux.append("\nVeículo com maior quilometragem média da frota: "+ maiorKmMedia());
+        
 
         return aux.toString();
     }

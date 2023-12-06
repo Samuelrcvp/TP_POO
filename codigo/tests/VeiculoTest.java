@@ -22,13 +22,21 @@ public class VeiculoTest {
     public void testAddRota() {
         assertTrue(veiculo.addRota(rota1));
         assertTrue(veiculo.addRota(rota2));
-        assertFalse(veiculo.addRota(new Rota(50.0, new Date())));
+        assertFalse(veiculo.addRota(new Rota(500.0, new Date())));
+    }
+
+    @Test
+    public void testPercorrerRota(){
+        veiculo.percorrerRota(rota1);
+        assertEquals(27.57, veiculo.tanque.getCapacidadeAtual(),0.01);
     }
 
     @Test
     public void testAbastecer() {
-        assertEquals(10.0, veiculo.abastecer(10.0), 0.01);
-        assertEquals(20.0, veiculo.abastecer(30.0), 0.01);
+        double litrosAbastecidos = veiculo.abastecer(10.0);
+
+        assertEquals(10.0, litrosAbastecidos, 0.01);
+        assertEquals(40.0, veiculo.tanque.getCapacidadeAtual(), 0.01);
     }
 
     @Test
@@ -55,7 +63,7 @@ public class VeiculoTest {
     public void testIniciarNovoMes() {
         veiculo.percorrerRota(rota1);
         veiculo.iniciarNovoMes();
-        assertEquals(0, veiculo.getQuantRotasPercorridas());
+        assertEquals(0, veiculo.getQuantRotas());
     }
 
     @Test
@@ -75,8 +83,25 @@ public class VeiculoTest {
 
     @Test
     public void testToString() {
+        // Configuração do cenário
+
+        veiculo.addRota(rota1);
         veiculo.percorrerRota(rota1);
-        String expected = "\nVEÍCULO: \nPlaca: ABC1234\nRotas Percorridas: " + rota1.relatorio();
-        assertEquals(expected, veiculo.toString());
+        veiculo.addRota(rota2);
+        veiculo.percorrerRota(rota2);
+        veiculo.abastecer(20.0);
+        veiculo.abastecer(10.0);
+
+        // Teste do método toString
+        String expectedToString = "\n=============== VEÍCULO ==============="
+                + "\nPlaca: ABC1234"
+                + "\nTanque Maxímo: 60 | Tanque Atual: 52,68"
+                + "\nTotal já abastecido: 30"
+                + "\nRotas adicionadas: 2"
+                + "\nRotas percorridas: 2"
+                + "\nQuilometragem total: 60"
+                + "\nQuilometragem do mês: 60"
+                + "\n";
+        assertEquals(expectedToString, veiculo.toString());
     }
 }
