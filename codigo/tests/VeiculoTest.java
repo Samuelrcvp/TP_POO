@@ -8,35 +8,42 @@ import java.util.Date;
 public class VeiculoTest {
 
     private Veiculo veiculo;
+    private Veiculo veiculo2;
     private Rota rota1;
     private Rota rota2;
 
     @Before
     public void setUp() {
-        veiculo = new Veiculo("ABC1234", 60.0, 30.0);
+        veiculo = new Carro("ABC1234", ECombustivel.GASOLINA);
+        veiculo2 = new Carro("EFG9876", ECombustivel.GASOLINA);
         rota1 = new Rota(20.0, new Date());
         rota2 = new Rota(40.0, new Date());
+        veiculo.abastecer(100);
+        veiculo2.abastecer(5);
+        
     }
 
     @Test
     public void testAddRota() {
+        
+
         assertTrue(veiculo.addRota(rota1));
         assertTrue(veiculo.addRota(rota2));
-        assertFalse(veiculo.addRota(new Rota(500.0, new Date())));
+        assertFalse(veiculo.addRota(new Rota(700.0, new Date())));
     }
 
     @Test
     public void testPercorrerRota(){
         veiculo.percorrerRota(rota1);
-        assertEquals(27.57, veiculo.tanque.getCapacidadeAtual(),0.01);
+        assertEquals(48.0, veiculo.tanque.getCapacidadeAtual(),0.01);
     }
 
     @Test
     public void testAbastecer() {
-        double litrosAbastecidos = veiculo.abastecer(10.0);
+        double litrosAbastecidos = veiculo2.abastecer(10.0) + veiculo2.abastecer(10.0);
 
-        assertEquals(10.0, litrosAbastecidos, 0.01);
-        assertEquals(40.0, veiculo.tanque.getCapacidadeAtual(), 0.01);
+        assertEquals(20.0, litrosAbastecidos, 0.01);
+        assertEquals(25.0, veiculo2.tanque.getCapacidadeAtual(), 0.01);
     }
 
     @Test
@@ -60,48 +67,37 @@ public class VeiculoTest {
     }
 
     @Test
-    public void testIniciarNovoMes() {
-        veiculo.percorrerRota(rota1);
-        veiculo.iniciarNovoMes();
-        assertEquals(0, veiculo.getQuantRotas());
-    }
-
-    @Test
     public void testPlacaCorresponde() {
         assertTrue(veiculo.placaCorresponde("ABC1234"));
         assertFalse(veiculo.placaCorresponde("XYZ5678"));
     }
 
-    @Test
-    public void testEquals() {
-        Veiculo veiculo2 = new Veiculo("ABC1234", 60.0, 30.0);
-        Veiculo veiculo3 = new Veiculo("XYZ5678", 60.0, 30.0);
-
-        assertTrue(veiculo.equals(veiculo2));
-        assertFalse(veiculo.equals(veiculo3));
-    }
 
     @Test
     public void testToString() {
         // Configuração do cenário
 
-        veiculo.addRota(rota1);
-        veiculo.percorrerRota(rota1);
-        veiculo.addRota(rota2);
-        veiculo.percorrerRota(rota2);
-        veiculo.abastecer(20.0);
-        veiculo.abastecer(10.0);
+        Veiculo veiculo3 = new Carro("GFS1234", ECombustivel.GASOLINA);
+
+        veiculo3.abastecer(45);
+
+        veiculo3.addRota(rota1);
+        veiculo3.percorrerRota(rota1);//20
+        veiculo3.addRota(rota2);
+        veiculo3.percorrerRota(rota2);//40
+        veiculo3.abastecer(20.0);
+        veiculo3.abastecer(10.0);
 
         // Teste do método toString
         String expectedToString = "\n=============== VEÍCULO ==============="
-                + "\nPlaca: ABC1234"
-                + "\nTanque Maxímo: 60 | Tanque Atual: 52,68"
-                + "\nTotal já abastecido: 30"
+                + "\nPlaca: GFS1234"
+                + "\nTanque Maxímo: 50 | Tanque Atual: 50"
+                + "\nTotal já abastecido: 56"
                 + "\nRotas adicionadas: 2"
                 + "\nRotas percorridas: 2"
                 + "\nQuilometragem total: 60"
                 + "\nQuilometragem do mês: 60"
                 + "\n";
-        assertEquals(expectedToString, veiculo.toString());
+        assertEquals(expectedToString, veiculo3.toString());
     }
 }

@@ -2,16 +2,17 @@ public class Tanque {
 
     /* Atributos */
     
-    private final double CONSUMO = 8.2;
+    private final double CONSUMO;
     private double capacidadeMaxima; 
     private double capacidadeAtual;
 
     /* Construtores */
 
     /* Recebe por parâmetro a capacidade maxima do tanque e a capacidade atual */
-    public Tanque(double capacidadeMaxima, double capacidadeAtual){
+    public Tanque(double capacidadeMaxima, double CONSUMO){
         this.capacidadeMaxima = capacidadeMaxima;
-        this.capacidadeAtual = capacidadeAtual;
+        this.capacidadeAtual = 0;
+        this.CONSUMO = CONSUMO;
     }
 
     /* Métodos */
@@ -25,10 +26,11 @@ public class Tanque {
             capacidadeAtual += litros;
             return litros;
 
-        }else {
+        }else if(tanqueDisponivel != 0){
             capacidadeAtual = capacidadeMaxima;
-            return capacidadeAtual;
+            return tanqueDisponivel;
         }
+        return 0; 
     }
 
     public double autonomiaMaxima(){
@@ -41,14 +43,18 @@ public class Tanque {
 
     }
 
+    public boolean percorrerRota(Rota rota){
+        double quilometragem = rota.getQuilometragem();
+        boolean podePercorrer = autonomiaAtual() >= quilometragem;
+        if (podePercorrer) {
+            
+            this.capacidadeAtual = (capacidadeAtual - (quilometragem / CONSUMO));
+        }
+        return podePercorrer;
+    }
+
     public double getCapacidadeAtual(){
         return capacidadeAtual;
     }
-    public void setCapacidadeAtual(double value){
-        this.capacidadeAtual = value;
-    }
 
-    public double getConsumo(){
-        return CONSUMO;
-    }
 }

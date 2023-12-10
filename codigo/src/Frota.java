@@ -52,7 +52,7 @@ public class Frota {
 
     public void iniciarNovoMes() {
         for(Veiculo veiculo:veiculos){
-            veiculo.iniciarNovoMes();
+            veiculo.apagarRotas();
         }
     }
 

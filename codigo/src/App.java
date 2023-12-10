@@ -1,4 +1,4 @@
-import java.io.File;
+/* import java.io.File;
 import java.util.Date;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -35,6 +35,8 @@ public class App {
         leitor.close();
         return opcao;
     }
+
+    ---------------------------------------------------------------------------------------------------------------------- */
 
     /* public static Map<String,Veiculo> geraVeiculos(int quantidade){
         
@@ -113,6 +115,11 @@ public class App {
         long range = end - start + 1;
         return start + (long) (range * sorteador.nextDouble());
     } */
+
+
+
+
+   /*  --------------------------------------------------------------------------------------------------------------
 
     private static void adicionarNovoVeiculo() {
 
@@ -203,13 +210,15 @@ public class App {
                 veiculo.percorrerRota(rota);
 
                 System.out.println("Rota percorrida com sucesso!");
+                 pausa();
             } catch (Exception e) {
                 System.out.println("Formato de data inválido. Rota não percorrida.");
+                 pausa();
             }
         } else {
             System.out.println("Veículo não encontrado.");
+             pausa();
         }
-        pausa();
     }
 
     private static void relatorioFrota() {
@@ -232,21 +241,27 @@ public class App {
             opcao = menu(nomeArq);
             switch(opcao){
             case 1: {
+                limparTela();
                 adicionarNovoVeiculo();
             }break;
             case 2: {
+                limparTela();
                 abastecerVeiculo();
             }break;
             case 3: {
+                limparTela();
                 adicionarRota();
             }break;
             case 4: {
+                limparTela();
                 percorrerRota();
             }break;
             case 5:{
+                limparTela();
                 relatorioFrota();
             }break;
             case 6:{
+                limparTela();
                 iniciarNovoMes();
             }break;
             default:
@@ -254,5 +269,26 @@ public class App {
             }
         }
         teclado.close();
+    }
+}
+ */
+
+import java.util.Date;
+
+class App{
+    public static void main(String[] args){
+        Veiculo veiculo = new Carro("GFS1234", ECombustivel.GASOLINA);
+        System.out.println(veiculo);
+        Rota rota1 = new Rota(20.0, new Date());
+        Rota rota2 = new Rota(40.0, new Date());
+        veiculo.addRota(rota1);
+        veiculo.addRota(rota2);
+        veiculo.abastecer(50);
+        veiculo.percorrerRota(rota1);
+        veiculo.percorrerRota(rota2);
+       System.out.println(veiculo);
+        veiculo.abastecer(20.0);
+        veiculo.abastecer(10.0);
+         System.out.println(veiculo);
     }
 }
