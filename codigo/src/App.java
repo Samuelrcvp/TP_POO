@@ -1,5 +1,8 @@
-/* import java.io.File;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
@@ -18,7 +21,7 @@ public class App {
         teclado.nextLine();
     }
 
-    public static int menu(String nomeArquivo) throws FileNotFoundException {
+    private static int menu(String nomeArquivo) throws FileNotFoundException {
         limparTela();
         File arqMenu = new File(nomeArquivo);
         Scanner leitor = new Scanner(arqMenu, "UTF-8");
@@ -36,107 +39,43 @@ public class App {
         return opcao;
     }
 
-    ---------------------------------------------------------------------------------------------------------------------- */
+    private static void gerarVeiculosComRotasRandom(int qntDe4Veiculos, int qntRotasPorVeiculo) {
+        Random random = new Random();
 
-    /* public static Map<String,Veiculo> geraVeiculos(int quantidade){
-        
-        Map<String,Veiculo> dados = new HashMap<>(quantidade*2);
-       
-        for (int i = 1; i <= quantidade; i++) {
-            String placa = gerarPlaca();
-            double capacidadeMaxima = sorteador.nextDouble(25d, 60d);
-            double capacidadeAtual = 0;
-            Veiculo novo = new Veiculo(placa, capacidadeMaxima, capacidadeAtual);
-            dados.put(placa, novo);
+        for (int i = 0; i < qntDe4Veiculos; i++) {
+            String placa = "ABC" + (random.nextInt(9000) + 1000); 
+            ECombustivel combustivel = ECombustivel.values()[random.nextInt(ECombustivel.values().length)];
+
+            Carro carro = new Carro(placa, combustivel);
+            Van van = new Van(placa, combustivel);
+            Furgao furgao = new Furgao(placa, combustivel);
+            Caminhao caminhao = new Caminhao(placa, combustivel);
+            frota.adicionarVeiculo(carro);
+            frota.adicionarVeiculo(van);
+            frota.adicionarVeiculo(furgao);
+            frota.adicionarVeiculo(caminhao);
+
+            List<Rota> rotas = geraRotaRandom(qntRotasPorVeiculo);
+            for(Rota rota: rotas){
+                carro.addRota(rota);
+                van.addRota(rota);
+                furgao.addRota(rota);
+                caminhao.addRota(rota);
+            }
         }
-        return dados;
-    }
-
-    public static String gerarPlaca() {
-        StringBuilder placa = new StringBuilder();
-
-        for (int i = 0; i < 3; i++) {
-            char letra = gerarLetraAleatoria();
-            placa.append(letra);
-        }
-
-        for (int i = 0; i < 4; i++) {
-            int numero = gerarNumeroAleatorio();
-            placa.append(numero);
-        }
-
-        return placa.toString();
-    }
-
-    public static char gerarLetraAleatoria() {
-
-        int codigoAscii = sorteador.nextInt(26) + 65;
-        return (char) codigoAscii;
-    }
-
-    public static int gerarNumeroAleatorio() {
-
-        return sorteador.nextInt(10);
-    }
-
-    public static List<Frota> geraFrota(int quantidade){
-        List<Frota> dados = new ArrayList<>(quantidade);
-        
-        for (int i = 0; i < quantidade; i++) {
-            int tamanhoFrota = sorteador.nextInt(1,10);
-            Frota nova = new Frota(tamanhoFrota);
-            dados.add(nova);
-        }
-        return dados;
     }
     
-    public static List<Rota> geraRota(int quantidade){
-        List<Rota> dados = new ArrayList<>(quantidade);
+    private static List<Rota> geraRotaRandom(int qnt){
+        Random random = new Random();
+        List<Rota> dados = new ArrayList<>(qnt);
         
-        for (int i = 0; i < quantidade; i++) {
-            double quilometragem = sorteador.nextDouble(20d, 450d);
-            Date data = gerarDataAleatoria();
-            Rota nova = new Rota(quilometragem, data);
-            dados.add(nova);
+        for (int i = 0; i < qnt; i++) {
+            double quilometragem = random.nextDouble(20d, 450d);
+            Date data = new Date();
+            Rota rota = new Rota(quilometragem, data);
+            dados.add(rota);
         }
         return dados;
-    }
-
-    public static Date gerarDataAleatoria() {
-        long dataInicialMillis = System.currentTimeMillis() - 365 * 24 * 60 * 60 * 1000L;
-        long dataFinalMillis = System.currentTimeMillis();
-
-        long dataAleatoriaMillis = IntervaloMs(dataInicialMillis, dataFinalMillis);
-
-        return new Date(dataAleatoriaMillis);
-    }
-
-    private static long IntervaloMs(long start, long end) {
-        long range = end - start + 1;
-        return start + (long) (range * sorteador.nextDouble());
-    } */
-
-
-
-
-   /*  --------------------------------------------------------------------------------------------------------------
-
-    private static void adicionarNovoVeiculo() {
-
-        System.out.println("Digite a placa do veículo:");
-        String placa = teclado.nextLine();
-
-        System.out.println("Digite a capacidade máxima do tanque:");
-        double capacidadeMaxima = Double.parseDouble(teclado.nextLine());
-
-        System.out.println("Digite a capacidade atual do tanque:");
-        double capacidadeAtual = Double.parseDouble(teclado.nextLine());
-
-        Veiculo novoVeiculo = new Veiculo(placa, capacidadeMaxima, capacidadeAtual);
-        frota.adicionarVeiculo(novoVeiculo);
-
-        System.out.println("\nVeículo adicionado com sucesso!");
-        pausa();
     }
 
     private static void abastecerVeiculo() {
@@ -232,50 +171,171 @@ public class App {
         pausa();
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
+    private static ECombustivel escolherCombustivel(){
+        String nomeArq = "codigo/menuCombustiveis";
+        ECombustivel combustivelEscolhido = null;
+        int opcao = -1;
+        while(opcao!=0 || combustivelEscolhido == null){
+            try {
+                    limparTela();
+                    opcao = menu(nomeArq);
+                    switch(opcao){
+                    case 1: {
+                        limparTela();
+                        return combustivelEscolhido = ECombustivel.ALCOOL;
+
+                    }
+                    case 2: {
+                        limparTela();
+                        return combustivelEscolhido = ECombustivel.GASOLINA;
+
+                    }
+                    case 3: {
+                        limparTela();
+                        return combustivelEscolhido = ECombustivel.DIESEL;
+
+                    }
+                    case 0:{
+                        return combustivelEscolhido;
+                    }
+
+                    default:
+                            System.out.println("Opção inválida. Tente novamente.");
+                    }
+            }catch (FileNotFoundException erro) {
+            System.out.println("Arquivo de Menu não encontrado " + erro);
+            }catch (NumberFormatException erro) {
+            System.out.println("Opção inválida. Escolha um número ");
+            pausa();
+            }
+        }
+        return combustivelEscolhido;
+    }
+
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    private static Veiculo criarVeiculo(String placa, ECombustivel combustivel) {
+
+        teclado = new Scanner(System.in); 
+        String nomeArq = "codigo/menuVeiculos";
+        Veiculo veiculo = null;
+        int opcao = -1;
+        while(opcao!=0 || veiculo == null){
+            try {
+                    limparTela();
+                    opcao = menu(nomeArq);
+                    switch(opcao){
+                    case 1: {
+                        limparTela();
+                        return veiculo = new Carro(placa, combustivel);
+
+                    }
+                    case 2: {
+                        limparTela();
+                        return veiculo = new Van(placa, combustivel);
+
+                    }
+                    case 3: {
+                        limparTela();
+                        return veiculo = new Furgao(placa, combustivel);
+
+                    }
+                    case 4: {
+                        limparTela();
+                        return veiculo = new Caminhao(placa, combustivel);
+
+                    }
+                    case 0:{
+                        return veiculo;
+                    }
+
+                    default:
+                            System.out.println("Opção inválida. Tente novamente.");
+                    }
+            }catch (FileNotFoundException erro) {
+            System.out.println("Arquivo de Menu não encontrado" + erro);
+            }catch (NumberFormatException erro) {
+                System.out.println("Opção inválida. Escolha um número ");
+                pausa();
+            }
+        }
+        
+        return veiculo;      
+    }
+
+    public static void main(String[] args) {
          teclado = new Scanner(System.in);
         String nomeArq = "codigo/menuPrincipal";
         int opcao = -1;
-        while(opcao!=0){
-            limparTela();
-            opcao = menu(nomeArq);
-            switch(opcao){
-            case 1: {
+        while(opcao!=0 || opcao==-1){
+        try {
+                gerarVeiculosComRotasRandom(5,3);
                 limparTela();
-                adicionarNovoVeiculo();
-            }break;
-            case 2: {
-                limparTela();
-                abastecerVeiculo();
-            }break;
-            case 3: {
-                limparTela();
-                adicionarRota();
-            }break;
-            case 4: {
-                limparTela();
-                percorrerRota();
-            }break;
-            case 5:{
-                limparTela();
-                relatorioFrota();
-            }break;
-            case 6:{
-                limparTela();
-                iniciarNovoMes();
-            }break;
-            default:
-                    System.out.println("Opção inválida. Tente novamente.");
+                opcao = menu(nomeArq);
+                switch(opcao){
+                case 1: {
+                    limparTela();
+                    System.out.println("Digite a placa do novo veículo:");
+                    String placa = teclado.nextLine();
+
+                    ECombustivel combustivelEscolhido = escolherCombustivel();
+                    if (combustivelEscolhido != null) {
+                        Veiculo veiculoCriado = criarVeiculo(placa, combustivelEscolhido);
+                        
+                        if (veiculoCriado != null && combustivelEscolhido != null) {
+                            limparTela();
+                            System.out.println("Veículo criado com sucesso!");
+                            frota.adicionarVeiculo(veiculoCriado);
+                            pausa();
+                        }else{
+                            limparTela();
+                            System.out.println("Erro ao criar veículo, tente novamente");
+                            pausa();
+                        }
+                    }    
+                }break;
+                case 2: {
+                    limparTela();
+                    abastecerVeiculo();
+                }break;
+                case 3: {
+                    limparTela();
+                    adicionarRota();
+                }break;
+                case 4: {
+                    limparTela();
+                    percorrerRota();
+                }break;
+                case 5:{
+                    limparTela();
+                    relatorioFrota();
+                }break;
+                case 6:{
+                    limparTela();
+                    iniciarNovoMes();
+                }break;
+                case 0:{
+                    System.out.println("Saindo...");
+                }break;
+                default:
+                        System.out.println("Opção inválida. Tente novamente.");
+                }
             }
-        }
+        catch (FileNotFoundException erro) {
+        System.out.println("Arquivo de Menu não encontrado" + erro);
+        }catch (NumberFormatException erro) {
+            System.out.println("Opção inválida. Escolha um número ");
+            pausa();
+        }}
         teclado.close();
     }
 }
- */
 
-import java.util.Date;
 
-class App{
+/*import java.util.Date;
+
+ class App{
     public static void main(String[] args){
         Veiculo veiculo = new Carro("GFS1234", ECombustivel.GASOLINA);
         System.out.println(veiculo);
@@ -291,4 +351,4 @@ class App{
         veiculo.abastecer(10.0);
          System.out.println(veiculo);
     }
-}
+} */
