@@ -1,6 +1,8 @@
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -24,16 +26,7 @@ public class VeiculoTest {
     }
 
     @Test
-    public void testAddRota() {
-        
-
-        assertTrue(veiculo.addRota(rota1));
-        assertTrue(veiculo.addRota(rota2));
-        assertFalse(veiculo.addRota(new Rota(700.0, new Date())));
-    }
-
-    @Test
-    public void testPercorrerRota(){
+    public void testPercorrerRota() throws ParseException{
         veiculo.percorrerRota(rota1);
         assertEquals(48.0, veiculo.tanque.getCapacidadeAtual(),0.01);
     }
@@ -47,7 +40,7 @@ public class VeiculoTest {
     }
 
     @Test
-    public void testKmNoMes() {
+    public void testKmNoMes() throws ParseException {
         veiculo.percorrerRota(rota1);
         assertEquals(20.0, veiculo.kmNoMes(), 0.01);
 
@@ -60,7 +53,7 @@ public class VeiculoTest {
     }
 
     @Test
-    public void testKmTotal() {
+    public void testKmTotal() throws ParseException {
         veiculo.percorrerRota(rota1);
         veiculo.percorrerRota(rota2);
         assertEquals(60.0, veiculo.kmTotal(), 0.01);
@@ -74,16 +67,14 @@ public class VeiculoTest {
 
 
     @Test
-    public void testToString() {
+    public void testToString() throws ParseException {
         // Configuração do cenário
 
         Veiculo veiculo3 = new Carro("GFS1234", ECombustivel.GASOLINA);
 
         veiculo3.abastecer(45);
 
-        veiculo3.addRota(rota1);
         veiculo3.percorrerRota(rota1);//20
-        veiculo3.addRota(rota2);
         veiculo3.percorrerRota(rota2);//40
         veiculo3.abastecer(20.0);
         veiculo3.abastecer(10.0);
@@ -93,7 +84,6 @@ public class VeiculoTest {
                 + "\nPlaca: GFS1234"
                 + "\nTanque Maxímo: 50 | Tanque Atual: 50"
                 + "\nTotal já abastecido: 56"
-                + "\nRotas adicionadas: 2"
                 + "\nRotas percorridas: 2"
                 + "\nQuilometragem total: 60"
                 + "\nQuilometragem do mês: 60"

@@ -1,7 +1,10 @@
 import java.util.List;
+import java.util.Scanner;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 abstract class Veiculo {
 
@@ -9,7 +12,6 @@ abstract class Veiculo {
     private final int MAX_ROTAS = 30;
     private double capacidadeMaxima;
     private String placa;
-    private List<Rota> rotas;
     private List<Rota> rotasPercoridas;
     private int quantRotas;
     Tanque tanque;
@@ -20,7 +22,6 @@ abstract class Veiculo {
         this.tipoVeiculo = tipoVeiculo;
         capacidadeMaxima = tipoVeiculo.capacidadeMaximaTanque;
         this.placa = placa;
-        rotas = new ArrayList<>();
         rotasPercoridas = new ArrayList<>();
         quantRotas = 0;
         tanque = new Tanque(capacidadeMaxima, combustivel.consumoMedio);
@@ -31,13 +32,16 @@ abstract class Veiculo {
         return tanque.autonomiaMaxima();
     }
 
-    public boolean addRota(Rota rota) {
+    private Rota addRota(double quilometragem, Date data) throws ParseException {
+
+        Rota rota = new Rota(quilometragem, data);
         if (quantRotas < MAX_ROTAS && autonomiaMaxima() >= rota.getQuilometragem()) {
-            rotas.add(rota);
+            
             quantRotas++;
-            return true;
+
+            return rota;
         }
-        return false;
+        return rota;
     }
 
     public double abastecer(double litros) {
@@ -67,10 +71,19 @@ abstract class Veiculo {
             .sum();
     }
 
-    public boolean percorrerRota(Rota rota) {
+    public boolean percorrerRota(double quilometragem, Date data) throws ParseException {
         
-        boolean podePercorrer = tanque.percorrerRota(rota);   
-        if (podePercorrer) {
+        Rota rota = addRota(quilometragem, data);
+        if (tanque.percorrerRota(rota) && rota != null) {
+            rotasPercoridas.add(rota);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean percorrerRota(Rota rota) throws ParseException{
+        
+        if (tanque.percorrerRota(rota) && rota != null) {
             rotasPercoridas.add(rota);
             return true;
         }
@@ -82,7 +95,6 @@ abstract class Veiculo {
     }
 
     public void apagarRotas() {
-        rotas.clear();
         rotasPercoridas.clear();
     }
 
@@ -106,7 +118,6 @@ abstract class Veiculo {
         aux.append("\nPlaca: "+ placa);
         aux.append("\nTanque Maxímo: "+ formatarDouble.format(capacidadeMaxima) + " | Tanque Atual: "+ formatarDouble.format(tanque.getCapacidadeAtual()));
         aux.append("\nTotal já abastecido: "+ formatarDouble.format(totalReabastecido));
-        aux.append("\nRotas adicionadas: "+ quantRotas);
         aux.append("\nRotas percorridas: "+ rotasPercoridas.size());
         aux.append("\nQuilometragem total: "+ formatarDouble.format(kmTotal()));
         aux.append("\nQuilometragem do mês: "+ formatarDouble.format(kmNoMes()));

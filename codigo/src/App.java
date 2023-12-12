@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
 
@@ -19,52 +20,36 @@ public class App {
     static void pausa() {
         System.out.println("\nEnter para continuar.");
         teclado.nextLine();
+        limparTela();
     }
 
-    private static int menu(String nomeArquivo) throws FileNotFoundException {
+    private static int menu(String nomeArquivo){
         limparTela();
-        File arqMenu = new File(nomeArquivo);
-        Scanner leitor = new Scanner(arqMenu, "UTF-8");
-        System.out.println(leitor.nextLine());
-        System.out.println("==============================");
-        int contador = 1;
-        while(leitor.hasNext()){
-            System.out.println(contador + " - " + leitor.nextLine());
-            contador++;
-        }
-        System.out.println("0 - Sair");
-        System.out.print("\nSua opção: ");
-        int opcao = Integer.parseInt(teclado.nextLine());
-        leitor.close();
+        int opcao = -1;
+        do{
+            try{
+                File arqMenu = new File(nomeArquivo);
+                Scanner leitor = new Scanner(arqMenu, "UTF-8");
+                System.out.println(leitor.nextLine());
+                System.out.println("==============================");
+
+                int contador = 1;
+                while(leitor.hasNext()){
+                    System.out.println(contador + " - " + leitor.nextLine());
+                    contador++;
+                }
+                System.out.println("0 - Sair");
+                System.out.print("\nSua opção: ");
+                opcao = Integer.parseInt(teclado.nextLine());
+                leitor.close();
+                
+            }catch(FileNotFoundException erro){
+                System.out.println("Erro ao ler arquivo menu.\n"+ erro);
+            }
+        }while(opcao == -1);
         return opcao;
     }
 
-    private static void gerarVeiculosComRotasRandom(int qntDe4Veiculos, int qntRotasPorVeiculo) {
-        Random random = new Random();
-
-        for (int i = 0; i < qntDe4Veiculos; i++) {
-            String placa = "ABC" + (random.nextInt(9000) + 1000); 
-            ECombustivel combustivel = ECombustivel.values()[random.nextInt(ECombustivel.values().length)];
-
-            Carro carro = new Carro(placa, combustivel);
-            Van van = new Van(placa, combustivel);
-            Furgao furgao = new Furgao(placa, combustivel);
-            Caminhao caminhao = new Caminhao(placa, combustivel);
-            frota.adicionarVeiculo(carro);
-            frota.adicionarVeiculo(van);
-            frota.adicionarVeiculo(furgao);
-            frota.adicionarVeiculo(caminhao);
-
-            List<Rota> rotas = geraRotaRandom(qntRotasPorVeiculo);
-            for(Rota rota: rotas){
-                carro.addRota(rota);
-                van.addRota(rota);
-                furgao.addRota(rota);
-                caminhao.addRota(rota);
-            }
-        }
-    }
-    
     private static List<Rota> geraRotaRandom(int qnt){
         Random random = new Random();
         List<Rota> dados = new ArrayList<>(qnt);
@@ -78,89 +63,80 @@ public class App {
         return dados;
     }
 
+    private static Veiculo localizarVeiculoPorPlaca() {
+        String placa;
+        do {
+            System.out.println("Digite a placa do veículo:");
+            placa = teclado.nextLine().trim();
+            if (placa.isEmpty()) {
+                System.out.println("Placa não pode ser vazia. Tente novamente.\n");
+            }
+        } while (placa.isEmpty());
+        limparTela();
+        Veiculo veiculo = frota.localizarVeiculo(placa);
+        if (veiculo == null) {
+            System.out.println("Veículo não encontrado");
+            pausa();
+            limparTela();
+        }
+        return veiculo;
+    }
+    
+
     private static void abastecerVeiculo() {
 
-        System.out.println("Digite a placa do veículo:");
-        String placa = teclado.nextLine();
-
-        Veiculo veiculo = frota.localizarVeiculo(placa);
-
-        if (veiculo != null) {
-            System.out.println("Digite a quantidade de litros a abastecer:");
-            double litrosAbastecidos = Double.parseDouble(teclado.nextLine());
-
-            veiculo.abastecer(litrosAbastecidos);
-
-            System.out.println("Abastecimento realizado com sucesso!");
-        } else {
-            System.out.println("Veículo não encontrado.");
-        }
-        pausa();
-    }
-
-    private static void adicionarRota() {
-
-        System.out.println("Digite a placa do veículo:");
-        String placa = teclado.nextLine();
-
-        Veiculo veiculo = frota.localizarVeiculo(placa);
-
-        if (veiculo != null) {
-            System.out.println("Digite a quilometragem da rota:");
-            double quilometragem = Double.parseDouble(teclado.nextLine());
-
-            System.out.println("Digite a data da rota (formato dd/MM/yyyy):");
-            String dataString = teclado.next();
-            SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
-
-            try {
-                Date data = formatoData.parse(dataString);
-                Rota rota = new Rota(quilometragem, data);
-                veiculo.addRota(rota);
-
-                System.out.println("Rota adicionada com sucesso!");
-            } catch (Exception e) {
-                System.out.println("Formato de data inválido. Rota não adicionada.");
+        Veiculo veiculo = localizarVeiculoPorPlaca();
+        
+        try {
+            if (veiculo != null) {
+                System.out.println("Digite a quantidade de litros a abastecer:");
+                double litros = Double.parseDouble(teclado.nextLine());
+                
+                double litrosAbastecidos = veiculo.abastecer(litros);
+                if (litrosAbastecidos > 0) {
+                    System.out.println("Foram abastecidos "+ litrosAbastecidos +" litros");
+                }else{
+                    System.out.println("Não foi possível abastecer, tanque cheio.");
+                };
             }
-        } else {
-            System.out.println("Veículo não encontrado.");
-        }
+            pausa();
+        }catch (NumberFormatException erro) {
+        System.out.println("Opção inválida.");
         pausa();
+        }      
     }
 
-    private static void percorrerRota() {
+    /* private static void adicionarRota() {
 
-        System.out.println("Digite a placa do veículo:");
-        String placa = teclado.nextLine();
+        Veiculo veiculo = localizarVeiculoPorPlaca();
+        try {
+            if (veiculo != null) {
+                System.out.println("Digite a quilometragem da rota:");
+                double quilometragem = Double.parseDouble(teclado.nextLine());
 
-        Veiculo veiculo = frota.localizarVeiculo(placa);
+                System.out.println("Digite a data da rota (formato dd/MM/yyyy):");
+                String dataString = teclado.next();
+                SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
 
-        if (veiculo != null) {
-            System.out.println("Digite a quilometragem da rota:");
-            double quilometragem = Double.parseDouble(teclado.nextLine());
+                try {
+                    Date data = formatoData.parse(dataString);
+                    Rota rota = new Rota(quilometragem, data);
+                    veiculo.addRota(rota);
 
-            System.out.println("Digite a data da rota (formato dd/MM/yyyy):");
-            String dataString = teclado.next();
-            SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
-
-            try {
-                Date data = formatoData.parse(dataString);
-                Rota rota = new Rota(quilometragem, data);
-                veiculo.percorrerRota(rota);
-
-                System.out.println("Rota percorrida com sucesso!");
-                 pausa();
-            } catch (Exception e) {
-                System.out.println("Formato de data inválido. Rota não percorrida.");
-                 pausa();
+                    System.out.println("Rota adicionada com sucesso!");
+                } catch (Exception e) {
+                    System.out.println("Formato de data inválido. Rota não adicionada.");
+                }
             }
-        } else {
-            System.out.println("Veículo não encontrado.");
-             pausa();
-        }
-    }
+            pausa();
+        }catch (NumberFormatException erro) {
+        System.out.println("Opção inválida.");
+        pausa();
+        }         
+    } */
 
     private static void relatorioFrota() {
+        limparTela();
         System.out.println(frota.relatorioFrota());
         pausa();
     }
@@ -170,6 +146,8 @@ public class App {
         System.out.println("Novo mês iniciado. Quilometragem mensal resetada para todos os veículos.");
         pausa();
     }
+
+    
 
     private static ECombustivel escolherCombustivel(){
         String nomeArq = "codigo/menuCombustiveis";
@@ -201,9 +179,7 @@ public class App {
 
                     default:
                             System.out.println("Opção inválida. Tente novamente.");
-                    }
-            }catch (FileNotFoundException erro) {
-            System.out.println("Arquivo de Menu não encontrado " + erro);
+                    }           
             }catch (NumberFormatException erro) {
             System.out.println("Opção inválida. Escolha um número ");
             pausa();
@@ -253,8 +229,6 @@ public class App {
                     default:
                             System.out.println("Opção inválida. Tente novamente.");
                     }
-            }catch (FileNotFoundException erro) {
-            System.out.println("Arquivo de Menu não encontrado" + erro);
             }catch (NumberFormatException erro) {
                 System.out.println("Opção inválida. Escolha um número ");
                 pausa();
@@ -264,36 +238,61 @@ public class App {
         return veiculo;      
     }
 
+    private static String verificarPlacaExiste(){
+
+        String placa;
+        do{
+            System.out.println("Digite a placa do novo veículo:");
+            placa = teclado.nextLine().trim();
+            
+            if (placa.isEmpty()) {
+                limparTela();
+                System.out.println("Placa não pode ser vazia");
+                pausa();
+            }
+        }while(placa.isEmpty());
+        limparTela();
+
+        Veiculo veiculo = frota.localizarVeiculo(placa);
+        if(veiculo != null){
+           limparTela();
+           System.out.println("Placa já existe na frota");
+           pausa();
+        }
+        return placa;
+    }
+
     public static void main(String[] args) {
          teclado = new Scanner(System.in);
         String nomeArq = "codigo/menuPrincipal";
         int opcao = -1;
         while(opcao!=0 || opcao==-1){
         try {
-                gerarVeiculosComRotasRandom(5,3);
-                limparTela();
+                /* gerarVeiculosComRotasRandom(5,3); */
+
                 opcao = menu(nomeArq);
                 switch(opcao){
                 case 1: {
                     limparTela();
-                    System.out.println("Digite a placa do novo veículo:");
-                    String placa = teclado.nextLine();
-
-                    ECombustivel combustivelEscolhido = escolherCombustivel();
-                    if (combustivelEscolhido != null) {
-                        Veiculo veiculoCriado = criarVeiculo(placa, combustivelEscolhido);
-                        
-                        if (veiculoCriado != null && combustivelEscolhido != null) {
-                            limparTela();
-                            System.out.println("Veículo criado com sucesso!");
-                            frota.adicionarVeiculo(veiculoCriado);
-                            pausa();
-                        }else{
-                            limparTela();
-                            System.out.println("Erro ao criar veículo, tente novamente");
-                            pausa();
-                        }
-                    }    
+                    String placa = verificarPlacaExiste();
+                    if (placa != null) {
+                        ECombustivel combustivelEscolhido = escolherCombustivel();
+                        if (combustivelEscolhido != null) {
+                            Veiculo veiculoCriado = criarVeiculo(placa, combustivelEscolhido);
+                            
+                            if (veiculoCriado != null && combustivelEscolhido != null) {
+                                limparTela();
+                                System.out.println("Veículo criado com sucesso!");
+                                frota.adicionarVeiculo(veiculoCriado);
+                                pausa();
+                            }else{
+                                limparTela();
+                                System.out.println("Erro ao criar veículo, tente novamente");
+                                pausa();
+                            }
+                        }    
+                    }
+                    
                 }break;
                 case 2: {
                     limparTela();
@@ -301,19 +300,42 @@ public class App {
                 }break;
                 case 3: {
                     limparTela();
-                    adicionarRota();
+                    Veiculo veiculo = localizarVeiculoPorPlaca(); 
+                    try{       
+                        System.out.println("Digite a quilometragem da rota:");
+                        double quilometragem = Double.parseDouble(teclado.nextLine());
+
+                        System.out.println("Digite a data da rota (formato dd/MM/yyyy):");
+                        String dataString = teclado.next();
+                        SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
+                        
+                        Date data = formatoData.parse(dataString);     
+                        if (veiculo != null) {
+                            veiculo.percorrerRota(quilometragem, data);
+                            
+                            System.out.println("Rota percorrida com sucesso!");
+                        }
+            
+                    }catch(ParseException erro){
+                        System.out.println("Formato de data inválido. Rota não percorrida: "+erro);
+                        pausa();
+                    }  
                 }break;
                 case 4: {
                     limparTela();
-                    percorrerRota();
+                    relatorioFrota();
                 }break;
                 case 5:{
                     limparTela();
-                    relatorioFrota();
+                    iniciarNovoMes();
                 }break;
                 case 6:{
                     limparTela();
-                    iniciarNovoMes();
+                    Veiculo veiculo = localizarVeiculoPorPlaca();
+                    if (veiculo != null) {
+                        System.out.println(veiculo.toString());
+                        pausa();
+                    }
                 }break;
                 case 0:{
                     System.out.println("Saindo...");
@@ -321,12 +343,10 @@ public class App {
                 default:
                         System.out.println("Opção inválida. Tente novamente.");
                 }
-            }
-        catch (FileNotFoundException erro) {
-        System.out.println("Arquivo de Menu não encontrado" + erro);
-        }catch (NumberFormatException erro) {
+            }catch (NumberFormatException erro) {
             System.out.println("Opção inválida. Escolha um número ");
             pausa();
+            limparTela();
         }}
         teclado.close();
     }

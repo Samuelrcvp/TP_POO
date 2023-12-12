@@ -29,20 +29,18 @@ public class FrotaTest {
         veiculo3.abastecer(100);
         veiculo4.abastecer(100);
 
-        veiculo1.addRota(rota1);
         veiculo1.percorrerRota(rota1);
 
-        veiculo2.addRota(rota1);
+
         veiculo2.percorrerRota(rota1);
-        veiculo2.addRota(rota2);
-        veiculo2.percorrerRota(rota2);
-        veiculo2.addRota(rota2);
+
         veiculo2.percorrerRota(rota2);
 
-        veiculo3.addRota(rota2);
+        veiculo2.percorrerRota(rota2);
+
+
         veiculo3.percorrerRota(rota2);
 
-        veiculo4.addRota(rota2);
         veiculo4.percorrerRota(rota2);
 
         frota.adicionarVeiculo(veiculo1);
@@ -99,10 +97,7 @@ public class FrotaTest {
 
         veiculo1.abastecer(100);
         veiculo2.abastecer(100);
-
-        veiculo1.addRota(rota1);
         veiculo1.percorrerRota(rota1);
-        veiculo2.addRota(rota2);
         veiculo2.percorrerRota(rota2);
         
         frota.adicionarVeiculo(veiculo1);
@@ -128,10 +123,7 @@ public class FrotaTest {
 
         veiculo1.abastecer(100);
         veiculo2.abastecer(100);
-
-        veiculo1.addRota(rota1);
         veiculo1.percorrerRota(rota1);
-        veiculo2.addRota(rota2);
         veiculo2.percorrerRota(rota2);
 
         assertEquals(veiculo2, frota.maiorKmTotal());
@@ -153,10 +145,7 @@ public class FrotaTest {
 
         veiculo1.abastecer(100);
         veiculo2.abastecer(100);
-        
-        veiculo1.addRota(rota1);
         veiculo1.percorrerRota(rota1);
-        veiculo2.addRota(rota2);
         veiculo2.percorrerRota(rota2);
 
         assertEquals(veiculo2, frota.maiorKmMedia());
