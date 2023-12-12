@@ -87,6 +87,9 @@ public class VeiculoTest {
                 + "\nRotas percorridas: 2"
                 + "\nQuilometragem total: 60"
                 + "\nQuilometragem do mês: 60"
+                + "\nProxima manutenção periódica daqui a 10000.0 km"
+                + "\nProxima troca de peças daqui a 10000.0 km"
+                + "\nDespeza total: R$ 233,55"
                 + "\n";
         assertEquals(expectedToString, veiculo3.toString());
     }

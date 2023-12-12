@@ -1,8 +1,5 @@
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Random;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,17 +9,29 @@ public class App {
     static Scanner teclado;
     private static Frota frota = new Frota();
 
+    /**
+     * Limpa a tela do console.
+     */
     public static void limparTela() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 
+    /**
+     * Pausa a execução do programa até que o usuário pressione Enter.
+     */
     static void pausa() {
         System.out.println("\nEnter para continuar.");
         teclado.nextLine();
         limparTela();
     }
 
+    /**
+     * Exibe um menu a partir de um arquivo e retorna a opção escolhida pelo usuário.
+     * 
+     * @param nomeArquivo Nome do arquivo contendo as opções do menu.
+     * @return Opção escolhida pelo usuário.
+     */
     private static int menu(String nomeArquivo){
         limparTela();
         int opcao = -1;
@@ -50,6 +59,11 @@ public class App {
         return opcao;
     }
 
+    /**
+     * Localiza um veículo na frota com base na placa inserida pelo usuário.
+     * 
+     * @return Veículo encontrado ou nulo se não encontrado.
+     */
     private static Veiculo localizarVeiculoPorPlaca() {
         String placa;
         do {
@@ -69,7 +83,9 @@ public class App {
         return veiculo;
     }
     
-
+    /**
+     * Abastece um veículo com base na placa inserida pelo usuário e na quantidade de litros.
+     */
     private static void abastecerVeiculo() {
 
         Veiculo veiculo = localizarVeiculoPorPlaca();
@@ -93,47 +109,27 @@ public class App {
         }      
     }
 
-    /* private static void adicionarRota() {
-
-        Veiculo veiculo = localizarVeiculoPorPlaca();
-        try {
-            if (veiculo != null) {
-                System.out.println("Digite a quilometragem da rota:");
-                double quilometragem = Double.parseDouble(teclado.nextLine());
-
-                System.out.println("Digite a data da rota (formato dd/MM/yyyy):");
-                String dataString = teclado.next();
-                SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
-
-                try {
-                    Date data = formatoData.parse(dataString);
-                    Rota rota = new Rota(quilometragem, data);
-                    veiculo.addRota(rota);
-
-                    System.out.println("Rota adicionada com sucesso!");
-                } catch (Exception e) {
-                    System.out.println("Formato de data inválido. Rota não adicionada.");
-                }
-            }
-            pausa();
-        }catch (NumberFormatException erro) {
-        System.out.println("Opção inválida.");
-        pausa();
-        }         
-    } */
-
+    /**
+    * Exibe o relatório da frota na tela e pausa a execução do programa.
+    */
     private static void relatorioFrota() {
         limparTela();
         System.out.println(frota.relatorioFrota());
         pausa();
     }
 
+    /**
+    * Inicia um novo mês na frota, resetando a quilometragem mensal para todos os veículos.
+    */
     private static void iniciarNovoMes() {
         frota.iniciarNovoMes();
         System.out.println("Novo mês iniciado. Quilometragem mensal resetada para todos os veículos.");
         pausa();
     }
 
+    /**
+    * Captura e manda o valor da manutenção feita para o método de somar
+    */
     private static void realizarManutencao(){
 
         Veiculo veiculo = localizarVeiculoPorPlaca();
@@ -151,6 +147,11 @@ public class App {
         }      
     }
 
+    /**
+    * Permite que o usuário escolha o tipo de combustível a ser utilizado.
+    * 
+    * @return Tipo de combustível escolhido pelo usuário.
+    */
     private static ECombustivel escolherCombustivel(){
         String nomeArq = "codigo/menuCombustiveis";
         ECombustivel combustivelEscolhido = null;
@@ -191,8 +192,13 @@ public class App {
     }
 
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-
+    /**
+     * Cria um novo veículo com base na escolha do usuário.
+     * 
+     * @param placa Placa do novo veículo.
+     * @param combustivel Combustível escolhido para o novo veículo.
+     * @return Novo veículo criado.
+     */
     private static Veiculo criarVeiculo(String placa, ECombustivel combustivel) {
 
         teclado = new Scanner(System.in); 
@@ -240,6 +246,11 @@ public class App {
         return veiculo;      
     }
 
+    /**
+    * Verifica se a placa digitada para um novo veículo já existe na frota.
+    * 
+    * @return Placa do novo veículo após verificação.
+    */
     private static String verificarPlacaExiste(){
 
         String placa = null;
@@ -265,13 +276,40 @@ public class App {
         return placa;
     }
 
-    public static void main(String[] args) {
+    /**
+     * Método para gerar dados de exemplo para a execução mais rápida do programa
+     * 
+     */
+     private static void gerarDadosParaExemplo() throws ParseException{
+        Veiculo veiculo1 = new Carro("GFS1234", ECombustivel.GASOLINA);
+        Veiculo veiculo2 = new Caminhao("ABC1234", ECombustivel.DIESEL);
+        frota.adicionarVeiculo(veiculo1);
+        frota.adicionarVeiculo(veiculo2);
+
+        veiculo1.abastecer(40);
+        veiculo2.abastecer(60);
+
+        veiculo1.percorrerRota(50, new Date());
+        veiculo1.percorrerRota(70, new Date());
+
+        veiculo2.percorrerRota(100, new Date());
+        veiculo2.percorrerRota(50, new Date());
+    }
+
+    /**
+     * Método principal que inicia a execução do programa.
+     * 
+     * @param args Argumentos da linha de comando (não utilizados neste caso).
+     * @throws ParseException
+     */
+    public static void main(String[] args) throws ParseException {
          teclado = new Scanner(System.in);
         String nomeArq = "codigo/menuPrincipal";
         int opcao = -1;
+        gerarDadosParaExemplo();
         while(opcao!=0 || opcao==-1){
         try {
-                /* gerarVeiculosComRotasRandom(5,3); */
+                
 
                 opcao = menu(nomeArq);
                 switch(opcao){
@@ -358,24 +396,3 @@ public class App {
         teclado.close();
     }
 }
-
-
-/*import java.util.Date;
-
- class App{
-    public static void main(String[] args){
-        Veiculo veiculo = new Carro("GFS1234", ECombustivel.GASOLINA);
-        System.out.println(veiculo);
-        Rota rota1 = new Rota(20.0, new Date());
-        Rota rota2 = new Rota(40.0, new Date());
-        veiculo.addRota(rota1);
-        veiculo.addRota(rota2);
-        veiculo.abastecer(50);
-        veiculo.percorrerRota(rota1);
-        veiculo.percorrerRota(rota2);
-       System.out.println(veiculo);
-        veiculo.abastecer(20.0);
-        veiculo.abastecer(10.0);
-         System.out.println(veiculo);
-    }
-} */
