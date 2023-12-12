@@ -1,6 +1,6 @@
 import java.util.List;
-import java.util.Scanner;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,6 +9,7 @@ import java.util.Date;
 abstract class Veiculo {
 
     private EVeiculo tipoVeiculo;
+    private ECombustivel tipoCombustivel;
     private final int MAX_ROTAS = 30;
     private double capacidadeMaxima;
     private String placa;
@@ -16,6 +17,8 @@ abstract class Veiculo {
     private int quantRotas;
     Tanque tanque;
     private double totalReabastecido;
+    private double totalGastoGasolina;
+    private double totalManutencoes;
 
     public Veiculo(EVeiculo tipoVeiculo, String placa, ECombustivel combustivel) {
 
@@ -26,6 +29,17 @@ abstract class Veiculo {
         quantRotas = 0;
         tanque = new Tanque(capacidadeMaxima, combustivel.consumoMedio);
         totalReabastecido = 0;
+        totalGastoGasolina = 0;
+        totalManutencoes = 0;
+
+    }
+
+    public double totalGasto(){
+        return totalGastoGasolina + totalManutencoes;
+    }
+
+    public void SomarManutencoes(double manutencoes){
+        totalManutencoes += manutencoes;
     }
 
     private double autonomiaMaxima() {
@@ -47,6 +61,7 @@ abstract class Veiculo {
     public double abastecer(double litros) {
         double valorAbastecido = tanque.abastecer(litros);
         totalReabastecido += valorAbastecido;
+        totalGastoGasolina += valorAbastecido * tipoCombustivel.precoMedio;
         return valorAbastecido;
     }
 
@@ -112,6 +127,7 @@ abstract class Veiculo {
 
     @Override
     public String toString(){
+        NumberFormat moeda = NumberFormat.getCurrencyInstance();
         DecimalFormat formatarDouble = new DecimalFormat("#.##");
         StringBuilder aux = new StringBuilder();
         aux.append("\n=============== VEÍCULO ===============");
@@ -121,6 +137,9 @@ abstract class Veiculo {
         aux.append("\nRotas percorridas: "+ rotasPercoridas.size());
         aux.append("\nQuilometragem total: "+ formatarDouble.format(kmTotal()));
         aux.append("\nQuilometragem do mês: "+ formatarDouble.format(kmNoMes()));
+        aux.append("\nProxíma manutenção periódica daqui a "+ tipoVeiculo.manutencaoPeriodica + " km");
+        aux.append("\nProxíma troca de peças daqui a "+ tipoVeiculo.manutencaoTrocaPecas + " km");
+        aux.append("\nDespeza total: "+ moeda.format(totalGasto()));
         aux.append("\n");
 
         return aux.toString();

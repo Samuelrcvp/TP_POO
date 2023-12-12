@@ -50,19 +50,6 @@ public class App {
         return opcao;
     }
 
-    private static List<Rota> geraRotaRandom(int qnt){
-        Random random = new Random();
-        List<Rota> dados = new ArrayList<>(qnt);
-        
-        for (int i = 0; i < qnt; i++) {
-            double quilometragem = random.nextDouble(20d, 450d);
-            Date data = new Date();
-            Rota rota = new Rota(quilometragem, data);
-            dados.add(rota);
-        }
-        return dados;
-    }
-
     private static Veiculo localizarVeiculoPorPlaca() {
         String placa;
         do {
@@ -147,7 +134,22 @@ public class App {
         pausa();
     }
 
-    
+    private static void realizarManutencao(){
+
+        Veiculo veiculo = localizarVeiculoPorPlaca();
+        
+        try {
+            if (veiculo != null) {
+                System.out.println("Digite o valor da manutenção ou troca de peças:");
+                double precoManutencao = Double.parseDouble(teclado.nextLine());
+                
+                veiculo.SomarManutencoes(precoManutencao);
+            }
+        }catch (NumberFormatException erro) {
+        System.out.println("Opção inválida.");
+        pausa();
+        }      
+    }
 
     private static ECombustivel escolherCombustivel(){
         String nomeArq = "codigo/menuCombustiveis";
@@ -240,7 +242,7 @@ public class App {
 
     private static String verificarPlacaExiste(){
 
-        String placa;
+        String placa = null;
         do{
             System.out.println("Digite a placa do novo veículo:");
             placa = teclado.nextLine().trim();
@@ -258,6 +260,7 @@ public class App {
            limparTela();
            System.out.println("Placa já existe na frota");
            pausa();
+           return null;
         }
         return placa;
     }
@@ -336,6 +339,10 @@ public class App {
                         System.out.println(veiculo.toString());
                         pausa();
                     }
+                }break;
+                case 7:{
+                    limparTela();
+                    realizarManutencao();
                 }break;
                 case 0:{
                     System.out.println("Saindo...");
